@@ -4,7 +4,7 @@ A simple Redis cache implementation for python functions. It exports two decorat
 
 -  The decorators support multi-user/multi-machine invocations for users executing the same function calls on different computers.
 
-- The decorators cache the function signatures and  results into  Redis key value database.
+-  The decorators cache the function signatures and  results into  Redis key value database.
 
 - The decorators allow user to set up cache-expiry.
 
