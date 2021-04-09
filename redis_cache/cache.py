@@ -64,7 +64,7 @@ class Cache:
         else:
             self.expire = expire
 
-        self.fun_key = None
+        self.key_func = None
 
     def __call__(self, func: Callable) -> Callable:
         """
