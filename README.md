@@ -1,21 +1,18 @@
 redis-cache
 ===========
-A simple Redis cache implementation for python functions.  
-It exports two decorators,  a generic Cache, and a special SliceableCache for sequence data.
+A simple Redis cache implementation for python functions. It exports two decorators, a generic Cache, and a special SliceableCache for sequence data.
 
--  The decorator support multi-user/multi-machine invocations for users executing the same function calls.
-on different computers.
+-  The decorators support multi-user/multi-machine invocations for users executing the same function calls on different computers.
 
-- The decorator caches the function signature and  result into  Redis key value database.
+- The decorators cache the function signatures and  results into  Redis key value database.
 
-- The decorator allow user to set up cache-expiry.
+- The decorators allow user to set up cache-expiry.
 
-- The SliceableChace support function that take start, end range parameters and return a slice dataframe. Assume that
-  the range parameters make the function a slice of a large invariable otherwise dataframe.
+- The SliceableChace supports function that takes start, end range arguments and returns a slice dataframe or series. Assume that the range arguments make the function return a slice of a large otherwise invariable datetime indexed dataframe.
 
-- The arguments and the return types must be serializable,by default pickle. User may choose other serializer as long as it provide dumps to serialize and loads to deserialize.
+- The arguments and the return types must be serializable,by default pickle. User may choose other serializer as long as it provides dumps to serialize and loads to deserialize.
 
-- By default, the Redis evicts the least recently used keys out of all keys with an expire field set, according to volatile-lru policy. User may choose other policy through configuration.
+- By default, the Redis evicts the least recently used keys out of all keys with an 'expire' field set, according to volatile-lru policy. User may choose other policy through configuration.
 
 How to use it
 ===========
@@ -57,6 +54,6 @@ def slicedata(*, start, end):
 
 df = slicedata(start='2020-02-09', end='2020-03-05')
 
-print(df
+print(df)
 
 ```

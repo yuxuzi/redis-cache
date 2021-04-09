@@ -1,7 +1,7 @@
 from functools import wraps
 import pandas as pd
 from redis_cache.cache import Cache
-from typing import Callable, Optional, Any, Union
+from typing import Callable
 
 import logging
 
@@ -12,25 +12,24 @@ logger = logging.getLogger("Sliceable Cache")
 class SliceableCache(Cache):
     """
     a experiment on sliceable cache
-    it apply to function that takes start, end as named range arguments, and returns
-    a slice of a large otherwise invariable datetime ,or series indexed dataframe, i.e.,
-    the overlapped segment of the returned dataframes or series with difference
-     starts, ends stay the same including the index.
+    it applys to function that takes start, end as named range arguments, and returns
+    a slice of a large datetime indexed series or dataframe, while the overlapped segment
+    with different starts, ends are consistent including the index.
     """
 
     def __init__(self, *args, start_val: str = 'start', end_val: str = 'end', **kwargs) -> None:
         """
 
         Args:
-            start_val: argument name of the start in the decorated function
-            end_val: argument name of the end in the decorated function
+            start_val: argument name of the start of the decorated function
+            end_val: argument name of the end in of decorated function
 
         """
         super().__init__(*args, **kwargs)
         self.start_val = start_val
         self.end_val = end_val
 
-    def __call__(self, func):
+    def __call__(self, func: Callable) -> Callable:
 
         if not self.connected:
             logger.info("Compute result from function.")
@@ -42,7 +41,7 @@ class SliceableCache(Cache):
         def inner(*args, **kwargs):
             kwargs0 = kwargs.copy()
             # pop the start, end arguments
-            # the rest of the arguments are used as keys
+            # the rest of the arguments are used as key
             start, end = kwargs.pop(self.start_val), kwargs.pop(self.end_val)
             args_serialized = self.serializer.dumps([args, kwargs])
             key = f'{self.key_func}:{args_serialized}'
@@ -51,7 +50,7 @@ class SliceableCache(Cache):
                 start0, end0, data = self.serializer.loads(result)
                 if isinstance(start0, pd.Timestamp):
                     start, end = pd.Timestamp(start), pd.Timestamp(end)
-                # return slice if range is avaliable in cache
+                # return slice of data if the range is available in cache
                 if start0 <= start and end <= end0:
                     if not isinstance(data, (pd.DataFrame, pd.Series)):
                         logger.error("Time series or DataFrame are expected")
@@ -71,30 +70,3 @@ class SliceableCache(Cache):
         inner.invalidate = self.invalidate
         inner.invalidate_all = self.invalidate_all
         return inner
-
-
-if __name__ == "__main__":
-    import redis
-    import numpy as np
-    import pandas as pd
-
-    client = redis.Redis()
-
-    np.random.seed(0)
-
-
-    @SliceableCache(client)
-    def slicedata(*, start, end):
-        df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list('ABCD'),
-                          index=pd.date_range('2020-01-01', periods=100))
-        logger.info("data frame created")
-
-        return df.loc[start:end]
-
-
-    df = slicedata(start='2020-02-09', end='2020-03-05')
-
-    logger.info(df.head())
-
-    df = slicedata(start='2020-02-20', end='2020-03-05')
-    logger.info(df.head())
