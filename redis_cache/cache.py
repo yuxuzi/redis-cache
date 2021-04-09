@@ -12,7 +12,7 @@ logger = logging.getLogger("cache decorator")
 
 class Serializer(ABC):
     """
-    Protocol for serializer, it is required to apply dumps to serialize and loads to deserialize
+    Protocol for serializer, it is required to implement dumps to serialize and loads to deserialize
     """
     @abstractmethod
     def dumps(self, obj) -> Union[str, bytes]:
@@ -66,7 +66,7 @@ class Cache:
 
         self.fun_key = None
 
-    def __call__(self, func: Callable) -> None:
+    def __call__(self, func: Callable) -> Callable:
         """
         Args:
             func: function to decorate
