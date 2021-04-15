@@ -40,7 +40,3 @@ your decorator be expanded to fetch only necessary information? You do not have
 to implement this, but your implementation should be ready-for-change for a
 feature like this.
 
-Please complete this task at your earliest convenience to a level that you see
-fit - you can send us your implementation anytime next week. If you have any
-questions about the prompt or the motivation behind it, donâ€™t hesitate to reach
-out. We hope you are well and look forward to speaking with you again.
